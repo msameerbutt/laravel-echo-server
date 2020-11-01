@@ -1,0 +1,90 @@
+version: '3.7'
+
+networks:
+  laravel-echoserver-network:
+    driver: bridge
+
+services:
+
+  # Nginx
+  web:
+    image: ${APP_BASE}/web:latest
+    build:
+      dockerfile: dockerfile
+      context: ./config/nginx      
+    container_name: web
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - ${APP_ROOT}:${APP_WORKING_DIR}
+      - ${AAP_LOGS}:/var/log/nginx/
+    env_file: 
+      - .env 
+    depends_on:
+      - app              
+    networks:
+      - laravel-echoserver-network
+
+  # The Application
+  app:
+    image: ${APP_BASE}/app:latest
+    build:
+      dockerfile: dockerfile
+      context: ./config/php  
+    container_name: app  
+    user: ${APP_USER}
+    volumes:
+      - ${APP_ROOT}:${APP_WORKING_DIR}
+      - ${AAP_LOGS}:/var/log
+    env_file: 
+      - .env
+    networks:
+      - laravel-echoserver-network
+
+  # The Composer 
+  composer:
+    image: ${APP_BASE}/composer:latest
+    build:
+      dockerfile: dockerfile
+      context: ./config/composer  
+    container_name: composer
+    volumes:
+      - ${APP_ROOT}:${APP_WORKING_DIR}
+    working_dir: ${APP_WORKING_DIR}
+    depends_on:
+      - app
+    user: ${APP_USER}
+    entrypoint: ['composer', '--ignore-platform-reqs']
+    networks:
+      - laravel-echoserver-network
+
+  # Node Container
+  npm:
+    image: ${APP_BASE}/node:latest
+    build:
+      dockerfile: dockerfile
+      context: ./config/node  
+    container_name: npm
+    volumes:
+      - ${APP_ROOT}:${APP_WORKING_DIR}
+    working_dir: ${APP_WORKING_DIR}
+    entrypoint: ['npm']
+    networks:
+      - laravel-echoserver-network         
+  
+  # The redis server    
+  redis:
+    image: ${APP_BASE}/redis:latest
+    build:
+      dockerfile: dockerfile
+      context: ./config/redis  
+    container_name: redis  
+    hostname: redis
+    volumes:
+      - ${APP_DATA}/redis:/data     
+    command: ["redis-server", "--appendonly", "yes"] # Redis notes : --appendonly persists the data
+    networks:
+      - laravel-echoserver-network
+     
