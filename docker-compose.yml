@@ -11,7 +11,7 @@ services:
     image: ${APP_BASE}/web:latest
     build:
       dockerfile: dockerfile
-      context: ./docker/nginx      
+      context: ./docker/nginx
     container_name: web
     restart: unless-stopped
     tty: true
@@ -20,10 +20,10 @@ services:
     volumes:
       - ${APP_ROOT}:${APP_WORKING_DIR}
       - ${AAP_LOGS}:/var/log/nginx/
-    env_file: 
-      - .env 
+    env_file:
+      - .env
     depends_on:
-      - app              
+      - app
     networks:
       - laravel-echoserver-network
 
@@ -32,23 +32,23 @@ services:
     image: ${APP_BASE}/app:latest
     build:
       dockerfile: dockerfile
-      context: ./docker/php  
-    container_name: app  
+      context: ./docker/php
+    container_name: app
     user: ${APP_USER}
     volumes:
       - ${APP_ROOT}:${APP_WORKING_DIR}
       - ${AAP_LOGS}:/var/log
-    env_file: 
+    env_file:
       - .env
     networks:
       - laravel-echoserver-network
 
-  # The Composer 
+  # The Composer
   composer:
     image: ${APP_BASE}/composer:latest
     build:
       dockerfile: dockerfile
-      context: ./docker/composer  
+      context: ./docker/composer
     container_name: composer
     volumes:
       - ${APP_ROOT}:${APP_WORKING_DIR}
@@ -60,31 +60,54 @@ services:
     networks:
       - laravel-echoserver-network
 
+  artisan:
+    build:
+      dockerfile: dockerfile
+      context: ./docker/php
+    container_name: artisan
+    volumes:
+      - ${APP_ROOT}:${APP_WORKING_DIR}:delegated
+    working_dir: ${APP_WORKING_DIR}
+    user: ${APP_USER}
+    entrypoint: ['php', '${APP_WORKING_DIR}/artisan']
+    networks:
+      - laravel-echoserver-network
+
   # Node Container
   npm:
     image: ${APP_BASE}/node:latest
     build:
       dockerfile: dockerfile
-      context: ./docker/node  
+      context: ./docker/node
     container_name: npm
     volumes:
       - ${APP_ROOT}:${APP_WORKING_DIR}
     working_dir: ${APP_WORKING_DIR}
     entrypoint: ['npm']
     networks:
-      - laravel-echoserver-network         
-  
-  # The redis server    
+      - laravel-echoserver-network
+
+  # The redis server
   redis:
     image: ${APP_BASE}/redis:latest
     build:
       dockerfile: dockerfile
-      context: ./docker/redis  
-    container_name: redis  
+      context: ./docker/redis
+    container_name: redis
     hostname: redis
     volumes:
-      - ${APP_DATA}/redis:/data     
+      - ${APP_DATA}/redis:/data
     command: ["redis-server", "--appendonly", "yes"] # Redis notes : --appendonly persists the data
     networks:
       - laravel-echoserver-network
-     
+
+  # The redis server
+  echo-server:
+    image: oanhnn/laravel-echo-server
+    container_name: laravel-echo-server
+    volumes:
+      - ${APP_ROOT}/docker/laravel-echo-server:/app
+    ports:
+      - "6001:6001"
+    networks:
+      - laravel-echoserver-network
