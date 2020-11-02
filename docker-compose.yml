@@ -11,7 +11,7 @@ services:
     image: ${APP_BASE}/web:latest
     build:
       dockerfile: dockerfile
-      context: ./config/nginx      
+      context: ./docker/nginx      
     container_name: web
     restart: unless-stopped
     tty: true
@@ -32,7 +32,7 @@ services:
     image: ${APP_BASE}/app:latest
     build:
       dockerfile: dockerfile
-      context: ./config/php  
+      context: ./docker/php  
     container_name: app  
     user: ${APP_USER}
     volumes:
@@ -48,15 +48,15 @@ services:
     image: ${APP_BASE}/composer:latest
     build:
       dockerfile: dockerfile
-      context: ./config/composer  
+      context: ./docker/composer  
     container_name: composer
     volumes:
       - ${APP_ROOT}:${APP_WORKING_DIR}
     working_dir: ${APP_WORKING_DIR}
     depends_on:
       - app
-    user: ${APP_USER}
-    entrypoint: ['composer', '--ignore-platform-reqs']
+    user: root
+    entrypoint: ['composer']
     networks:
       - laravel-echoserver-network
 
@@ -65,7 +65,7 @@ services:
     image: ${APP_BASE}/node:latest
     build:
       dockerfile: dockerfile
-      context: ./config/node  
+      context: ./docker/node  
     container_name: npm
     volumes:
       - ${APP_ROOT}:${APP_WORKING_DIR}
@@ -79,7 +79,7 @@ services:
     image: ${APP_BASE}/redis:latest
     build:
       dockerfile: dockerfile
-      context: ./config/redis  
+      context: ./docker/redis  
     container_name: redis  
     hostname: redis
     volumes:
