@@ -18,8 +18,12 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ${APP_ROOT}:${APP_WORKING_DIR}
-      - ${AAP_LOGS}:/var/log/nginx/
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/php-fpm.conf:/etc/nginx/php-fpm.conf
+      - ./docker/nginx/server.conf:/etc/nginx/server.conf       
+      - ${APP_ROOT}:${APP_WORKING_DIR}     
+      - ${AAP_LOGS}/nginx/error.log:/var/log/nginx/error.log
+      - ${AAP_LOGS}/nginx/access.log:/var/log/nginx/access.log
     env_file:
       - .env
     depends_on:
@@ -37,7 +41,7 @@ services:
     user: ${APP_USER}
     volumes:
       - ${APP_ROOT}:${APP_WORKING_DIR}
-      - ${AAP_LOGS}:/var/log
+      - ${AAP_LOGS}/php:/var/log
     env_file:
       - .env
     networks:

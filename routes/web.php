@@ -19,4 +19,5 @@ Route::get('/', function () {
 
 Route::get('test-broadcast', function(){
     broadcast(new \App\Events\ExampleEvent);
+    var_dump("done");
 });
