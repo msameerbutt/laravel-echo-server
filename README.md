@@ -1,4 +1,6 @@
 # Laravel Brodcasting event via web socket
+This is a basic skelton to understand the architecture of laravel web sockets.
+This skelton can be used for dev environment.
 
 ## Prerequisites
 1. Docker
@@ -20,7 +22,7 @@
 1. Instsll NPM dependencies from site root with `docker-compose run --rm npm install`
 1. Compile JS/CSS files from site root with `docker-compose run --rm npm run dev`
 1. Prepare the .env file 
-1. Browse the site `http://localhost:80`, you should see a Laravel welcome page, and open console tab to see broadcasted event data
+1. Browse the site `http(s)://app.test:80`, you should see a Laravel welcome page, and open console tab to see broadcasted event data
 1. Jump into the app container from site root with `docker-compose exec app bash` and run the following command to listen queue `php artisan queue:listen --tries=1`
-1. Browse this route to broadcase a public event `http://localhost/test-broadcast`
+1. Browse this route to broadcase a public event `http(s)://app.test/test-broadcast`
 1. You should see the event data 

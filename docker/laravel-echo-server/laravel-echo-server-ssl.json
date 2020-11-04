@@ -1,7 +1,7 @@
 {
   "apiOriginAllow": {},
   "authEndpoint": "/broadcasting/auth",
-  "authHost": "http://app.test",
+  "authHost": "https://app.test",
   "clients": [],
   "database": "redis",
   "databaseConfig": {
@@ -22,9 +22,9 @@
   "devMode": false,
   "host": null,
   "port": 6001,
-  "protocol": "http",
-  "sslCertPath": "",
-  "sslKeyPath": "",
+  "protocol": "https",
+  "sslCertPath": "/etc/ssl/self.crt",
+  "sslKeyPath": "/etc/ssl/self.key",
   "sslCertChainPath": "",
   "sslPassphrase": "",
   "socketio": {},

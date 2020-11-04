@@ -38,9 +38,6 @@ RUN docker-php-ext-enable \
     mysqli \
     redis
 
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 # Add user for laravel application
 RUN usermod -u 1000 www-data && \
     groupmod -g 1000 www-data

@@ -17,10 +17,11 @@ services:
     tty: true
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/nginx/php-fpm.conf:/etc/nginx/php-fpm.conf
-      - ./docker/nginx/server.conf:/etc/nginx/server.conf       
+      - ./docker/nginx/server-ssl.conf:/etc/nginx/server.conf       
       - ${APP_ROOT}:${APP_WORKING_DIR}     
       - ${AAP_LOGS}/nginx/error.log:/var/log/nginx/error.log
       - ${AAP_LOGS}/nginx/access.log:/var/log/nginx/access.log
@@ -45,7 +46,9 @@ services:
     env_file:
       - .env
     networks:
-      - laravel-echoserver-network
+      laravel-echoserver-network:
+        aliases: 
+          - app.test
 
   # The Composer
   composer:
@@ -105,13 +108,16 @@ services:
     networks:
       - laravel-echoserver-network
 
-  # The redis server
+  # The Laravel echo server
   echo-server:
     image: oanhnn/laravel-echo-server
     container_name: laravel-echo-server
     volumes:
-      - ${APP_ROOT}/docker/laravel-echo-server:/app
+      - ${APP_ROOT}/docker/laravel-echo-server/laravel-echo-server-ssl.json:/app/laravel-echo-server.json
+      - ./docker/laravel-echo-server/ssl:/etc/ssl
     ports:
       - "6001:6001"
     networks:
-      - laravel-echoserver-network
+      laravel-echoserver-network:
+        aliases: 
+          - echo-server

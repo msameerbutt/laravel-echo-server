@@ -9,5 +9,8 @@ ADD ./php-fpm.conf /etc/nginx/php-fpm.conf
 # Add Nginx PHP FPM
 ADD ./server.conf /etc/nginx/server.conf
 
+# Copy Nginx SSL Certificates
+COPY ./ssl /etc/nginx/ssl
+
 # Working Directory
 WORKDIR /var/www/html
